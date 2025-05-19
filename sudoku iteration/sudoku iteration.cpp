@@ -22,7 +22,13 @@ int main()
 {
 	Point map[81]{ { false , 0 } };
 
+	//for (int i = 0 ; i < 81 ; i++) {
+	//	map[i].num = i;
+	//}
+
 	printf(" 欢迎使用数独工具\n hanks for you use the sudoku tool\n");
+	
+	
 	while (1) {
 
 		//操作框架
@@ -161,7 +167,7 @@ int main()
 					}
 					free(input);
 					map_print(map);
-					/*if (errorNum > 0)*/
+					//if (errorNum > 0)
 					printf("输入中有错误信息：%s\n", error);
 					printf("[0]继续输入（修改）题目\n[1]结束输入并开始计算答案（计算结束后可选择性查看）\n>>>");
 					char* input2 = GetString();
@@ -190,40 +196,52 @@ int main()
 		map_print(map);
 		break;
 	}
+	
+
+	//map_print(map);
+	//RightCheck(-1,80,map);
 }
 
 long long int count = 0;
 //❤迭代
 void Love(int num, int seat, Point* map) {
-	printf("\ncounting: %lld %d %d",count++,num,seat);
+	printf("\ncounting...%lld %d %d",count++,num,seat);
 
-	if (num > 9 || num == -1)
+	if (num > 9 || num == -1) {
+		map[seat].num = 0;
 		Love(map[seat - 1].title ? -1 : map[seat - 1].num + 1, seat - 1, map);
+	}
 
-	if (map[seat].title)
+	if (map[seat].title) {
 		seat++;
+	}
 
 	if (RightCheck(num, seat, map)) {
+		printf("\nture %d",seat);
 		if (seat >= 80) {
 			map[seat].num = num;
+			printf("\n?\n");
 			return;
 		}
-		else
+		else {
 			map[seat].num = num;
 			map_print(map);
 			Love(1, seat + 1, map);
+		}
 	}
 	else {
 		if (num >= 9) {
 			map[seat].num = 0;
 			Love(map[seat - 1].title ? -1 : map[seat - 1].num + 1,seat - 1, map);
 		}
-		else
-			Love(num + 1,seat,map);
+		else {
+			Love(num + 1, seat, map);
+		}
 	}
 }
 
 bool RightCheck(int num,int seat,Point* map) {
+	printf("\nhave check:%d %d",num, seat);
 
 	//横向检测
 	int xT = seat / 9;
@@ -244,22 +262,22 @@ bool RightCheck(int num,int seat,Point* map) {
 	//当前小格检测--十字检测，先检测目标十字方向上是否可行并记录，再用记录数据遍历十字对应位的值
 	int xP = yT;
 	int yP = xT;
-	int xC[2]{ (xP % 3 ? -(xP % 3) : 1) , (xP % 3 != 2 ? 2 - (xP % 3) : -1) };
-	int yC[2]{ yP + (yP % 3 ? yP % 3 : -1) , yP + (yP % 3 != 2 ? (yP % 3) - 2 : 1) };
+	signed int xC[2]{ (xP % 3 ? -(xP % 3) : 1) , (xP % 3 != 2 ? 2 - (xP % 3) : -1) };
+	signed int yC[2]{ yP + (yP % 3 ? -(yP % 3) : 1) , yP + (yP % 3 != 2 ? 2 -(yP % 3) : -1) };
 	for (int i = 0; i < 2; i++) {
 		printf("\nxC[%d]:%d", i, xC[i] + seat);
 		if (map[xC[i] + seat].num == num)
 			return false;
 	}
 	for (int i = 0; i < 2; i++) {
-		printf("\nyC[%d]:%d xP:%d", i, yC[i] * 9 + xP,xP);
+		printf("\nyC[%d]:%d", i,yC[i] * 9 + xP);
 		if (map[yC[i] * 9 + xP].num == num)
 			return false;
 	}
 	for (int x = 0 ; x < 2 ; x++) {
 		for (int y = 0 ; y < 2 ; y++) {
+			printf("\n(%d,%d):%d", yC[y], xC[y] + xP, yC[y] * 9 + xC[x] + xP);
 			if (map[yC[y] * 9 + xC[x] + xP].num == num) {
-				printf("\n(%d,%d):%d", x,y, yC[y] * 9 + xC[x] + xP);
 				return false;
 			}
 		}
